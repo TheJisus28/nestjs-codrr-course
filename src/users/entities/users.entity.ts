@@ -1,7 +1,9 @@
-import { BaseEntity } from 'src/config/base.entity';
 import { ROLES } from 'src/constants/roles';
+import { BaseEntity } from 'src/config/base.entity';
 import { IUser } from 'src/interfaces/user.interface';
-import { Column, Entity } from 'typeorm';
+
+import { Column, Entity, OneToMany } from 'typeorm';
+import { UserProjectEntity } from './userProjects.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity implements IUser {
@@ -25,4 +27,7 @@ export class UserEntity extends BaseEntity implements IUser {
 
   @Column({ type: 'enum', enum: ROLES, default: ROLES.BASIC })
   role: ROLES;
+
+  @OneToMany(() => UserProjectEntity, (userProject) => userProject.user)
+  projectsIncludes: UserProjectEntity[];
 }
