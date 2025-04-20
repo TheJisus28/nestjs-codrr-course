@@ -16,7 +16,7 @@ export class UserEntity extends BaseEntity implements IUser {
   @Column({ type: 'varchar', length: 100, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 50 })
+  @Column({ type: 'varchar', length: 50, unique: true })
   username: string;
 
   @Column({ type: 'varchar', length: 100 })
