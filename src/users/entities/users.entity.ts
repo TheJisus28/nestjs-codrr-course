@@ -1,4 +1,5 @@
 import { BaseEntity } from 'src/config/base.entity';
+import { ROLES } from 'src/constants/roles';
 import { IUser } from 'src/interfaces/user.interface';
 import { Column, Entity } from 'typeorm';
 
@@ -22,6 +23,6 @@ export class UserEntity extends BaseEntity implements IUser {
   @Column({ type: 'varchar', length: 100 })
   password: string;
 
-  @Column({ type: 'varchar', length: 20 })
-  role: string;
+  @Column({ type: 'enum', enum: ROLES, default: ROLES.BASIC })
+  role: ROLES;
 }
