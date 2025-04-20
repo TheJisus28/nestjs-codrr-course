@@ -1,5 +1,5 @@
-import { IProject } from 'src/interfaces/project.interface';
-import { BaseEntity } from 'src/config/base.entity';
+import { IProject } from '../../interfaces/project.interface';
+import { BaseEntity } from '../../config/base.entity';
 
 import { Column, Entity, OneToMany } from 'typeorm';
 import { UserProjectEntity } from 'src/users/entities/userProjects.entity';
