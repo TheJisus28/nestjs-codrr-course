@@ -2,7 +2,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
-void ConfigModule.forRoot({
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+ConfigModule.forRoot({
   envFilePath: `.env.${process.env.NODE_ENV}`,
 });
 
