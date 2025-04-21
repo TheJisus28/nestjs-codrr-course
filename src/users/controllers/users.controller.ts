@@ -7,6 +7,6 @@ export class UsersController {
 
   @Get('say-hello')
   getHello(): string {
-    return this.userService.getHello();
+    return 'Hello from UsersController!';
   }
 }
