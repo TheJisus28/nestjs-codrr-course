@@ -1,25 +1,29 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class ErrorManager extends Error {
-  constructor({
-    type,
-    message,
-  }: {
-    type: keyof typeof HttpStatus;
-    message: string;
-  }) {
-    super(`${type} :: ${message}`);
+  constructor({ type, message }: { type: HttpStatus; message: string }) {
+    super(`${HttpStatus[type]} :: ${message}`);
+    this.name = HttpStatus[type];
   }
 
-  public static createSignatureError(message: string) {
-    const name = message.split(' :: ')[0];
-    if (name) {
-      throw new HttpException(
-        message,
-        HttpStatus[name as keyof typeof HttpStatus],
+  public static handleError(error: any): HttpException {
+    if (error instanceof ErrorManager) {
+      return new HttpException(
+        error.message,
+        HttpStatus[error.name as keyof typeof HttpStatus] ||
+          HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    } else if (error instanceof HttpException) {
+      return error;
+    } else if (error instanceof Error) {
+      return new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     } else {
-      throw new HttpException(message, HttpStatus.INTERNAL_SERVER_ERROR);
+      // Log unknown errors to the console
+      console.error('Unknown error occurred:', error);
+      return new HttpException(
+        'An unexpected error occurred',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

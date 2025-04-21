@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/users.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { UpdateUserDTO, UserDTO } from '../dto/user.dto';
+import { HttpStatus } from '@nestjs/common';
+import { ErrorManager } from 'src/utils/error.manager';
 
 @Injectable()
 export class UsersService {
@@ -15,7 +17,7 @@ export class UsersService {
     try {
       return await this.userRepository.save(body);
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : String(error));
+      throw ErrorManager.handleError(error);
     }
   }
 
@@ -23,18 +25,27 @@ export class UsersService {
     try {
       return await this.userRepository.find();
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : String(error));
+      throw ErrorManager.handleError(error);
     }
   }
 
   public async findUserById(id: number): Promise<UserEntity | null> {
     try {
-      return await this.userRepository
+      const user = await this.userRepository
         .createQueryBuilder('user')
         .where({ id })
         .getOne();
+
+      if (!user) {
+        throw new ErrorManager({
+          type: HttpStatus.NOT_FOUND,
+          message: `User with ID ${id} not found`,
+        });
+      }
+
+      return user;
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : String(error));
+      throw ErrorManager.handleError(error);
     }
   }
 
@@ -46,11 +57,14 @@ export class UsersService {
       const user: UpdateResult = await this.userRepository.update(id, body);
 
       if (user.affected === 0) {
-        return null;
+        throw new ErrorManager({
+          type: HttpStatus.NOT_FOUND,
+          message: `User with ID ${id} not found`,
+        });
       }
       return user;
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : String(error));
+      throw ErrorManager.handleError(error);
     }
   }
 
@@ -59,11 +73,14 @@ export class UsersService {
       const user: DeleteResult = await this.userRepository.delete(id);
 
       if (user.affected === 0) {
-        return null;
+        throw new ErrorManager({
+          type: HttpStatus.NOT_FOUND,
+          message: `User with ID ${id} not found`,
+        });
       }
       return user;
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : String(error));
+      throw ErrorManager.handleError(error);
     }
   }
 }
