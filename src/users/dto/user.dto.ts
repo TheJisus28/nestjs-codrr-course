@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
 } from 'class-validator';
 import { ROLES } from 'src/constants/roles';
@@ -19,6 +20,7 @@ export class UserDTO {
 
   @IsNotEmpty()
   @IsNumber()
+  @IsPositive()
   age: number;
 
   @IsNotEmpty()

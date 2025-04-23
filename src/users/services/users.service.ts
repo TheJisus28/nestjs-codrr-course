@@ -15,6 +15,17 @@ export class UsersService {
 
   public async createUser(body: UserDTO): Promise<UserEntity> {
     try {
+      const user = await this.userRepository.findOne({
+        where: { email: body.email },
+      });
+
+      if (user) {
+        throw new ErrorManager({
+          type: HttpStatus.CONFLICT,
+          message: `User with email ${body.email} already exists`,
+        });
+      }
+
       return await this.userRepository.save(body);
     } catch (error) {
       throw ErrorManager.handleError(error);

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class ErrorManager extends Error {
   constructor({ type, message }: { type: HttpStatus; message: string }) {
-    super(`${HttpStatus[type]} :: ${message}`);
+    super(message);
     this.name = HttpStatus[type];
   }
 
