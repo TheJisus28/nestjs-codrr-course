@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  IsUUID,
 } from 'class-validator';
 import { ROLES } from 'src/constants/roles';
 
@@ -68,4 +69,9 @@ export class UpdateUserDTO {
   @IsOptional()
   @IsEnum(ROLES)
   role: ROLES;
+}
+
+export class GetUserByIdDTO {
+  @IsUUID()
+  id: string;
 }

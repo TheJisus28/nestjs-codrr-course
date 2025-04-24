@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/users.entity';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Repository, DeepPartial } from 'typeorm';
 import { UpdateUserDTO, UserDTO } from '../dto/user.dto';
 import { HttpStatus } from '@nestjs/common';
 import { ErrorManager } from 'src/utils/error.manager';
@@ -40,7 +40,7 @@ export class UsersService {
     }
   }
 
-  public async findUserById(id: number): Promise<UserEntity | null> {
+  public async findUserById(id: string): Promise<UserEntity | null> {
     try {
       const user = await this.userRepository
         .createQueryBuilder('user')
@@ -61,19 +61,33 @@ export class UsersService {
   }
 
   public async updateUser(
-    body: UpdateUserDTO,
     id: string,
-  ): Promise<UpdateResult | null> {
+    body: UpdateUserDTO,
+  ): Promise<UserEntity | null> {
     try {
-      const user: UpdateResult = await this.userRepository.update(id, body);
+      const rawResult = await this.userRepository
+        .createQueryBuilder()
+        .update(UserEntity)
+        .set(body)
+        .where('id = :id', { id })
+        .returning('*')
+        .execute();
 
-      if (user.affected === 0) {
+      if (rawResult.affected === 0) {
         throw new ErrorManager({
           type: HttpStatus.NOT_FOUND,
           message: `User with ID ${id} not found`,
         });
       }
-      return user;
+
+      if (Array.isArray(rawResult.raw) && rawResult.raw.length > 0) {
+        return this.userRepository.merge(
+          new UserEntity(),
+          rawResult.raw[0] as DeepPartial<UserEntity>,
+        );
+      }
+
+      return null;
     } catch (error) {
       throw ErrorManager.handleError(error);
     }

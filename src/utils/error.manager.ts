@@ -15,8 +15,6 @@ export class ErrorManager extends Error {
       );
     } else if (error instanceof HttpException) {
       return error;
-    } else if (error instanceof Error) {
-      return new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     } else {
       // Log unknown errors to the console
       console.error('Unknown error occurred:', error);
