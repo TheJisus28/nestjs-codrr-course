@@ -95,13 +95,6 @@ export class UsersService {
         .where({ [key]: value })
         .getOne();
 
-      if (!user) {
-        throw new ErrorManager({
-          type: HttpStatus.NOT_FOUND,
-          message: `User with ${key} ${value} not found`,
-        });
-      }
-
       return user;
     } catch (error) {
       throw ErrorManager.handleError(error);
