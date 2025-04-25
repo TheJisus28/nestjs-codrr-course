@@ -3,6 +3,7 @@ import { UserProjectEntity } from '../entities/userProjects.entity';
 import { UpdateUserDTO, UserDTO, UserToProjectDTO } from '../dto/user.dto';
 
 import { DeleteResult, Repository, DeepPartial } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 import { Injectable } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
@@ -30,6 +31,11 @@ export class UsersService {
           message: `User with email ${body.email} already exists`,
         });
       }
+
+      body.password = await bcrypt.hash(
+        body.password,
+        parseInt(process.env.SALT_ROUNDS || '10'),
+      );
 
       return await this.userRepository.save(body);
     } catch (error) {
