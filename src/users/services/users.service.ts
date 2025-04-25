@@ -81,6 +81,33 @@ export class UsersService {
     }
   }
 
+  public async findBy({
+    key,
+    value,
+  }: {
+    key: keyof UserDTO;
+    value: string;
+  }): Promise<UserEntity | null> {
+    try {
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .addSelect('user.password')
+        .where({ [key]: value })
+        .getOne();
+
+      if (!user) {
+        throw new ErrorManager({
+          type: HttpStatus.NOT_FOUND,
+          message: `User with ${key} ${value} not found`,
+        });
+      }
+
+      return user;
+    } catch (error) {
+      throw ErrorManager.handleError(error);
+    }
+  }
+
   public async updateUser(
     id: string,
     body: UpdateUserDTO,
