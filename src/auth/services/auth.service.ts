@@ -1,6 +1,6 @@
 import { UsersService } from 'src/users/services/users.service';
 import { UserEntity } from 'src/users/entities/users.entity';
-import { PayloadToken } from '../interfaces/auth.interface';
+import { AuthResponse, PayloadToken } from '../interfaces/auth.interface';
 
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
@@ -53,7 +53,7 @@ export class AuthService {
     return jwt.sign(payload, secret, options);
   }
 
-  public async generateJWT(user: UserEntity) {
+  public async generateJWT(user: UserEntity): Promise<AuthResponse> {
     const getUser = await this.userservice.findUserById(user.id);
 
     if (!getUser) {
