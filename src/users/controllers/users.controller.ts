@@ -13,12 +13,15 @@ import { UsersService } from '../services/users.service';
 import { UserDTO, UserToProjectDTO } from '../dto/user.dto';
 import { PublicAccess } from 'src/auth/decorators/public.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Controller('users')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
+  @PublicAccess()
   @Post('register')
   public async userRegister(@Body() body: UserDTO) {
     return await this.userService.createUser(body);
@@ -29,6 +32,7 @@ export class UsersController {
     return await this.userService.relationToProject(body);
   }
 
+  @Roles('BASIC')
   @Get('all')
   public async getAllUsers() {
     return await this.userService.findUsers();

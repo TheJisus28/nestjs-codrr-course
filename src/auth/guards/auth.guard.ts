@@ -1,3 +1,11 @@
+import { IUseToken } from '../interfaces/auth.interface';
+import { useToken } from 'src/utils/user.token';
+import { PUBLIC_KEY } from 'src/constants/key.decorators';
+import { ErrorManager } from 'src/utils/error.manager';
+import { UsersService } from 'src/users/services/users.service';
+
+import { Request } from 'express';
+
 import {
   CanActivate,
   ExecutionContext,
@@ -5,12 +13,6 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
-import { PUBLIC_KEY } from 'src/constants/key.decorators';
-import { UsersService } from 'src/users/services/users.service';
-import { ErrorManager } from 'src/utils/error.manager';
-import { useToken } from 'src/utils/user.token';
-import { IUseToken } from '../interfaces/auth.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
