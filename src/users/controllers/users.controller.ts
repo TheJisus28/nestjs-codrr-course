@@ -14,7 +14,8 @@ import { UserDTO, UserToProjectDTO } from '../dto/user.dto';
 import { PublicAccess } from 'src/auth/decorators/public.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+//import { Roles } from 'src/auth/decorators/roles.decorator';
+import { AdminAccess } from 'src/auth/decorators/admin.decorator';
 
 @Controller('users')
 @UseGuards(AuthGuard, RolesGuard)
@@ -32,7 +33,7 @@ export class UsersController {
     return await this.userService.relationToProject(body);
   }
 
-  @Roles('BASIC')
+  @AdminAccess()
   @Get('all')
   public async getAllUsers() {
     return await this.userService.findUsers();
@@ -43,6 +44,8 @@ export class UsersController {
   public async getUserById(@Param('id', new ParseUUIDPipe()) id: string) {
     return await this.userService.findUserById(id);
   }
+
+  @PublicAccess()
   @Put(':id')
   public async updateUser(
     @Param('id', new ParseUUIDPipe()) id: string,

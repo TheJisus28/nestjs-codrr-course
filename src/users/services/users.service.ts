@@ -106,6 +106,12 @@ export class UsersService {
     body: UpdateUserDTO,
   ): Promise<UserEntity | null> {
     try {
+      if (body.password)
+        body.password = await bcrypt.hash(
+          body.password,
+          parseInt(process.env.SALT_ROUNDS || '10'),
+        );
+
       const rawResult = await this.userRepository
         .createQueryBuilder()
         .update(UserEntity)

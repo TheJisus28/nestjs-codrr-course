@@ -15,6 +15,7 @@ export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
   canActivate(context: ExecutionContext) {
     try {
+      // Check if the route is public
       const isPublic = this.reflector.get<boolean>(
         PUBLIC_KEY,
         context.getHandler(),
@@ -23,12 +24,12 @@ export class RolesGuard implements CanActivate {
       if (isPublic) {
         return true;
       }
-
+      // Check if the route has roles defined
       const roles = this.reflector.get<Array<keyof typeof ROLES>>(
         ROLES_KEY,
         context.getHandler(),
       );
-
+      // Check if the route has admin access
       const admin = this.reflector.get<string>(ADMIN_KEY, context.getHandler());
 
       const request = context.switchToHttp().getRequest<Request>();
