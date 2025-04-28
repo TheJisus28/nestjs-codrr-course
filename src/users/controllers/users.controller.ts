@@ -28,6 +28,7 @@ export class UsersController {
     return await this.userService.createUser(body);
   }
 
+  @PublicAccess()
   @Post('add-to-project')
   public async addToProject(@Body() body: UserToProjectDTO) {
     return await this.userService.relationToProject(body);
