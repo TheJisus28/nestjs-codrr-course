@@ -16,9 +16,11 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 //import { Roles } from 'src/auth/decorators/roles.decorator';
 import { AdminAccess } from 'src/auth/decorators/admin.decorator';
+import { AccessLevel } from 'src/auth/decorators/access-level.decorator';
+import { AccessLevelGuard } from 'src/auth/guards/access-level.guard';
 
 @Controller('users')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, AccessLevelGuard)
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
@@ -28,7 +30,7 @@ export class UsersController {
     return await this.userService.createUser(body);
   }
 
-  @PublicAccess()
+  @AccessLevel(50)
   @Post('add-to-project')
   public async addToProject(@Body() body: UserToProjectDTO) {
     return await this.userService.relationToProject(body);

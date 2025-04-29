@@ -4,17 +4,35 @@ import { ProjectEntity } from '../entities/projects.entity';
 import { DeepPartial, DeleteResult, Repository } from 'typeorm';
 import { ProjectDTO, UpdateProjectDTO } from '../dto/project.dto';
 import { ErrorManager } from 'src/utils/error.manager';
+import { ACCESS_LEVEL } from 'src/constants/roles';
+import { UsersService } from 'src/users/services/users.service';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectRepository(ProjectEntity)
     private readonly projectRepository: Repository<ProjectEntity>,
+    private readonly userService: UsersService,
   ) {}
 
-  public async createProject(body: ProjectDTO): Promise<ProjectEntity> {
+  public async createProject(body: ProjectDTO, ownerId: string) {
     try {
-      return await this.projectRepository.save(body);
+      const user = await this.userService.findUserById(ownerId);
+
+      if (!user) {
+        throw new ErrorManager({
+          type: HttpStatus.NOT_FOUND,
+          message: `User with ID ${ownerId} not found`,
+        });
+      }
+
+      const project = await this.projectRepository.save(body);
+
+      return await this.userService.relationToProject({
+        user,
+        project,
+        accessLevel: ACCESS_LEVEL.OWNER,
+      });
     } catch (error) {
       throw ErrorManager.handleError(error);
     }
