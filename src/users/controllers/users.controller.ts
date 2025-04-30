@@ -1,3 +1,25 @@
+// --- Project imports
+
+// Decorators
+import { AdminAccess } from 'src/auth/decorators/admin.decorator';
+import { PublicAccess } from 'src/auth/decorators/public.decorator';
+import { AccessLevel } from 'src/auth/decorators/access-level.decorator';
+import { IsUserOwner } from 'src/auth/decorators/is-user-owner.decorator';
+
+// Guards
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { AccessLevelGuard } from 'src/auth/guards/access-level.guard';
+import { UserOwnerGuard } from 'src/auth/guards/user-owner.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+
+// Services
+import { UsersService } from '../services/users.service';
+
+// DTOs
+import { UserDTO, UserToProjectDTO } from '../dto/user.dto';
+
+// ---NestJS imports
+
 import {
   Body,
   Controller,
@@ -9,18 +31,9 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from '../services/users.service';
-import { UserDTO, UserToProjectDTO } from '../dto/user.dto';
-import { PublicAccess } from 'src/auth/decorators/public.decorator';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-//import { Roles } from 'src/auth/decorators/roles.decorator';
-import { AdminAccess } from 'src/auth/decorators/admin.decorator';
-import { AccessLevel } from 'src/auth/decorators/access-level.decorator';
-import { AccessLevelGuard } from 'src/auth/guards/access-level.guard';
 
 @Controller('users')
-@UseGuards(AuthGuard, RolesGuard, AccessLevelGuard)
+@UseGuards(AuthGuard, RolesGuard, AccessLevelGuard, UserOwnerGuard)
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
@@ -42,13 +55,13 @@ export class UsersController {
     return await this.userService.findUsers();
   }
 
-  @PublicAccess()
+  @IsUserOwner()
   @Get(':id')
   public async getUserById(@Param('id', new ParseUUIDPipe()) id: string) {
     return await this.userService.findUserById(id);
   }
 
-  @PublicAccess()
+  @IsUserOwner()
   @Put(':id')
   public async updateUser(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -57,6 +70,7 @@ export class UsersController {
     return await this.userService.updateUser(id, body);
   }
 
+  @IsUserOwner()
   @Delete(':id')
   public async deleteUser(@Param('id', new ParseUUIDPipe()) id: string) {
     return await this.userService.deleteUser(id);

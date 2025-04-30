@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { ACCESS_LEVEL_KEY } from 'src/constants/key.decorators';
+import { ROLES } from 'src/constants/roles';
 import { UsersService } from 'src/users/services/users.service';
 import { ErrorManager } from 'src/utils/error.manager';
 
@@ -31,6 +32,12 @@ export class AccessLevelGuard implements CanActivate {
       const request = context.switchToHttp().getRequest<Request>();
       // user's ID is available in the request object.
       const { idUser } = request;
+      const { roleUser } = request;
+
+      // Allow access if the user is an admin
+      if (roleUser === (ROLES.ADMIN as string)) {
+        return true;
+      }
 
       // Retrieves the required access level for the route handler using the defined metadata key.
       const accessLevel = this.reflector.get<number>(
