@@ -15,6 +15,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { AccessLevelGuard } from 'src/auth/guards/access-level.guard';
 import { AccessLevel } from 'src/auth/decorators/access-level.decorator';
 import { PublicAccess } from 'src/auth/decorators/public.decorator';
+import { ACCESS_LEVEL } from 'src/constants/roles';
 
 @UseGuards(AuthGuard, RolesGuard, AccessLevelGuard)
 @Controller('projects')
@@ -40,7 +41,7 @@ export class ProjectsController {
     return await this.projectService.findProjectById(id);
   }
 
-  @AccessLevel(50)
+  @AccessLevel(ACCESS_LEVEL.OWNER)
   @Put('update/:ProjectId')
   public async updateProject(
     @Param('ProjectId', ParseUUIDPipe) id: string,
