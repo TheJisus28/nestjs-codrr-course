@@ -1,8 +1,8 @@
-import { TASK_STATUS } from 'src/constants/status-tasks';
+import { TASK_STATUS } from '../../constants/status-tasks';
 import { BaseEntity } from '../../config/base.entity';
-import { ProjectEntity } from 'src/projects/entities/projects.entity';
+import { ProjectEntity } from '../../projects/entities/projects.entity';
+import { ITask } from '../../interfaces/task.interface';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { ITask } from 'src/interfaces/task.interface';
 
 @Entity({ name: 'tasks' })
 export class TaskEntity extends BaseEntity implements ITask {
